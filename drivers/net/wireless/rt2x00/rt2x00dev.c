@@ -189,7 +189,7 @@ static void rt2x00lib_bc_buffer_iter(void *data, u8 *mac,
 	/*
 	 * Only AP mode interfaces do broad- and multicast buffering
 	 */
-	if (vif->type != NL80211_IFTYPE_AP)
+	if (vif->type != NL80211_IFTYPE_AP && vif->type != NL80211_IFTYPE_P2P_GO)
 		return;
 
 	/*
@@ -208,6 +208,7 @@ static void rt2x00lib_beaconupdate_iter(void *data, u8 *mac,
 	struct rt2x00_dev *rt2x00dev = data;
 
 	if (vif->type != NL80211_IFTYPE_AP &&
+	    vif->type != NL80211_IFTYPE_P2P_GO &&
 	    vif->type != NL80211_IFTYPE_ADHOC &&
 	    vif->type != NL80211_IFTYPE_MESH_POINT &&
 	    vif->type != NL80211_IFTYPE_WDS)
@@ -1244,7 +1245,7 @@ static inline void rt2x00lib_set_if_combinations(struct rt2x00_dev *rt2x00dev)
 	 */
 	if_limit = &rt2x00dev->if_limits_ap;
 	if_limit->max = rt2x00dev->ops->max_ap_intf;
-	if_limit->types = BIT(NL80211_IFTYPE_AP);
+	if_limit->types = BIT(NL80211_IFTYPE_AP) | BIT(NL80211_IFTYPE_P2P_GO);
 #ifdef CONFIG_MAC80211_MESH
 	if_limit->types |= BIT(NL80211_IFTYPE_MESH_POINT);
 #endif
@@ -1358,7 +1359,7 @@ int rt2x00lib_probe_dev(struct rt2x00_dev *rt2x00dev)
 	 * which require beaconing, depend on the availability of
 	 * beacon entries.
 	 */
-	rt2x00dev->hw->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION);
+	rt2x00dev->hw->wiphy->interface_modes = BIT(NL80211_IFTYPE_STATION) | BIT(NL80211_IFTYPE_P2P_CLIENT);
 	if (rt2x00dev->bcn->limit > 0)
 		rt2x00dev->hw->wiphy->interface_modes |=
 		    BIT(NL80211_IFTYPE_ADHOC) |
@@ -1366,7 +1367,8 @@ int rt2x00lib_probe_dev(struct rt2x00_dev *rt2x00dev)
 #ifdef CONFIG_MAC80211_MESH
 		    BIT(NL80211_IFTYPE_MESH_POINT) |
 #endif
-		    BIT(NL80211_IFTYPE_WDS);
+		    BIT(NL80211_IFTYPE_WDS) |
+		    BIT(NL80211_IFTYPE_P2P_GO);
 
 	rt2x00dev->hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
 

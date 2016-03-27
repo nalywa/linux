@@ -232,7 +232,7 @@ int rt2x00mac_add_interface(struct ieee80211_hw *hw,
 	 * increase interface count and start initialization.
 	 */
 
-	if (vif->type == NL80211_IFTYPE_AP)
+	if (vif->type == NL80211_IFTYPE_AP || vif->type == NL80211_IFTYPE_P2P_GO)
 		rt2x00dev->intf_ap_count++;
 	else
 		rt2x00dev->intf_sta_count++;
@@ -275,11 +275,11 @@ void rt2x00mac_remove_interface(struct ieee80211_hw *hw,
 	 * no interface is present.
 	 */
 	if (!test_bit(DEVICE_STATE_PRESENT, &rt2x00dev->flags) ||
-	    (vif->type == NL80211_IFTYPE_AP && !rt2x00dev->intf_ap_count) ||
-	    (vif->type != NL80211_IFTYPE_AP && !rt2x00dev->intf_sta_count))
+	    ((vif->type == NL80211_IFTYPE_AP || vif->type == NL80211_IFTYPE_P2P_GO) && !rt2x00dev->intf_ap_count) ||
+	    ((vif->type != NL80211_IFTYPE_AP && vif->type != NL80211_IFTYPE_P2P_GO) && !rt2x00dev->intf_sta_count))
 		return;
 
-	if (vif->type == NL80211_IFTYPE_AP)
+	if (vif->type == NL80211_IFTYPE_AP || vif->type == NL80211_IFTYPE_P2P_GO)
 		rt2x00dev->intf_ap_count--;
 	else
 		rt2x00dev->intf_sta_count--;
@@ -406,6 +406,7 @@ static void rt2x00mac_set_tim_iter(void *data, u8 *mac,
 	struct rt2x00_intf *intf = vif_to_intf(vif);
 
 	if (vif->type != NL80211_IFTYPE_AP &&
+        vif->type != NL80211_IFTYPE_P2P_GO &&
 	    vif->type != NL80211_IFTYPE_ADHOC &&
 	    vif->type != NL80211_IFTYPE_MESH_POINT &&
 	    vif->type != NL80211_IFTYPE_WDS)

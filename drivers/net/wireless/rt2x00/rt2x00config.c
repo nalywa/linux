@@ -44,9 +44,11 @@ void rt2x00lib_config_intf(struct rt2x00_dev *rt2x00dev,
 	case NL80211_IFTYPE_AP:
 	case NL80211_IFTYPE_MESH_POINT:
 	case NL80211_IFTYPE_WDS:
+	case NL80211_IFTYPE_P2P_GO:
 		conf.sync = TSF_SYNC_AP_NONE;
 		break;
 	case NL80211_IFTYPE_STATION:
+	case NL80211_IFTYPE_P2P_CLIENT:
 		conf.sync = TSF_SYNC_INFRA;
 		break;
 	default:
